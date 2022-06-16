@@ -12,10 +12,11 @@ pipeline{
 			}
 		}
 		stage('Push image') {
-        docker.withRegistry('https://registry.hub.docker.com', 'dockerHub') {
-            def customImage = docker.build("miltonc/dockerwebapp")
-            customImage.push()
-        }
+            script { 
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+                    app.push("latest")
+                    } 
+            } 
         }
 	}
 	post {
