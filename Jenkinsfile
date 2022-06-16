@@ -1,29 +1,46 @@
-pipeline { 
-    agent any 
-    stages { 
-        stage('Cloning our Git') { 
-            steps { 
-               checkout scm
-            }
-        } 
-        stage('Build') {
+pipeline{
+
+	agent any
+
+	environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+	}
+
+	stages {
+	    
+	    stage('gitclone') {
+
 			steps {
-				bat 'docker build -t dockerkr12/nodeapp .'
+				checkout scm
 			}
 		}
-        stage('Deploy our image') { 
-            steps { 
-                script { 
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
 
-                    def customImage = docker.build("dockerkr12/nodeapp")
+		stage('Build') {
 
-                    /* Push the container to the custom Registry */
-                    customImage.push()
-    }
-                } 
-            }
-        } 
-    }
+			steps {
+				sh 'docker build -t dockerkr12/nodeapp .'
+			}
+		}
+
+		stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+
+		stage('Push') {
+
+			steps {
+				sh 'docker push dockerkr12/nodeapp'
+			}
+		}
+	}
+
+	post {
+		always {
+			sh 'docker logout'
+		}
+	}
+
 }
-
