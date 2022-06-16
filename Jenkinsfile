@@ -1,11 +1,39 @@
-node {
-    checkout scm
+pipeline{
 
-    docker.withRegistry('https://hub.docker.com', 'dockerhub') {
+	agent any
 
-        def customImage = docker.build("dockerkr12/nodeapp")
+	environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+	}
 
-        /* Push the container to the custom Registry */
-        customImage.push()
-    }
+	stages {
+
+		stage('Build') {
+
+			steps {
+				sh 'docker build -t dockerkr12/nodeapp .'
+			}
+		}
+
+		stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+
+		stage('Push') {
+
+			steps {
+				sh 'docker push dockerkr12/nodeapp'
+			}
+		}
+	}
+
+	post {
+		always {
+			sh 'docker logout'
+		}
+	}
+
 }
