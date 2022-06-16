@@ -1,5 +1,6 @@
 pipeline{
 	agent any
+    def app
 	environment {
 		DOCKERHUB_CREDENTIALS=credentials('MyGithub')
 	}
@@ -14,16 +15,12 @@ pipeline{
 				bat 'docker build -t dockerkr12/nodeapp .'
 			}
 		}
-		stage('Login') {
-			steps {
-				bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-			}
-		}
-		stage('Push') {
-			steps {
-				bat 'docker push dockerkr12/nodeapp'
-			}
-		}
+		stage('Push image') {
+        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+            app.push("latest")
+            } 
+                echo "Trying to Push Docker Build to DockerHub"
+    }
 	}
 	post {
 		always {
