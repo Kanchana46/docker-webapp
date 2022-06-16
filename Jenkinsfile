@@ -11,23 +11,23 @@ pipeline{
 		}
 		stage('Build') {
 			steps {
-				sh 'docker build -t dockerkr12/nodeapp .'
+				bat 'docker build -t dockerkr12/nodeapp .'
 			}
 		}
 		stage('Login') {
 			steps {
-				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+				bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
 			}
 		}
 		stage('Push') {
 			steps {
-				sh 'docker push dockerkr12/nodeapp'
+				bat 'docker push dockerkr12/nodeapp'
 			}
 		}
 	}
 	post {
 		always {
-			sh 'docker logout'
+			bat 'docker logout'
 		}
 	}
 
