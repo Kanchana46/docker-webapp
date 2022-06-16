@@ -1,8 +1,9 @@
 pipeline{
 	agent any
-	environment {
-		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
-	}
+	environment { 
+        registry = "dockerkr12/nodeapp" 
+        registryCredential = 'dockerhub' 
+    }
 	stages {
 	    stage('gitclone') {
 			steps {
@@ -14,16 +15,15 @@ pipeline{
 				bat 'docker build -t dockerkr12/nodeapp .'
 			}
 		}
-		stage('Login') {
-			steps {
-				bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-			}
-		}
-		stage('Push') {
-			steps {
-				bat 'docker push dockerkr12/nodeapp'
-			}
-		}
+		stage('Deploy our image') { 
+            steps { 
+                script { 
+                    docker.withRegistry( '', registryCredential ) { 
+                       dockerImage.push() 
+                  }
+                } 
+            }
+        } 
 	}
 	post {
 		always {
