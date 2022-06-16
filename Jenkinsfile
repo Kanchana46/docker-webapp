@@ -1,9 +1,6 @@
 pipeline{
 	agent any
     def app
-	environment {
-		DOCKERHUB_CREDENTIALS=credentials('MyGithub')
-	}
 	stages {
 	    stage('gitclone') {
 			steps {
