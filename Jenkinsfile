@@ -1,6 +1,5 @@
 pipeline{
 	agent any
-    def app
 	stages {
 	    stage('gitclone') {
 			steps {
@@ -13,11 +12,11 @@ pipeline{
 			}
 		}
 		stage('Push image') {
-        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-            app.push("latest")
-            } 
-                echo "Trying to Push Docker Build to DockerHub"
-    }
+        docker.withRegistry('https://registry.hub.docker.com', 'dockerHub') {
+            def customImage = docker.build("miltonc/dockerwebapp")
+            customImage.push()
+        }
+        }
 	}
 	post {
 		always {
