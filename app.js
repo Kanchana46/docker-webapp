@@ -16,7 +16,6 @@ app.get('/', function (req, res) {
 });
 
 app.get('/login', (req, res) => {
-    console.log('Hi')
     res.json({
         "status": 'success'
     })
