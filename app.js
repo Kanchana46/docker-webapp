@@ -9,6 +9,7 @@ app.use(express.urlencoded({ extended: true }));
     res.send("Hello from NodeJS!");
 });*/
 
+
 app.use(express.static(__dirname.replace(/\\/g, "/") + '/dist/frontend/'))
 
 app.get('/', function (req, res) {
